@@ -19,6 +19,7 @@ JVM_ARGS=(
     "-Dbench.pg.url=jdbc:postgresql://localhost:5432/pk_bench?reWriteBatchedInserts=true"
     "-Dbench.pg.user=bench"
     "-Dbench.pg.password=bench123"
+    "-Dbench.mongo.uri=mongodb://bench:bench123@localhost:27017/pk_bench?authSource=admin"
 )
 
 PARAM_ARGS=()
@@ -48,5 +49,11 @@ docker exec pk-bench-postgres psql -U bench -d pk_bench \
     -f /dev/stdin < "$PROJECT_ROOT/scripts/analyze_postgresql.sql" \
     > "$RESULTS_DIR/pg_storage.txt" 2>&1 || true
 
+docker exec pk-bench-mongo mongosh \
+    "mongodb://bench:bench123@localhost:27017/pk_bench?authSource=admin" \
+    --quiet "$PROJECT_ROOT/scripts/analyze_mongo.js" \
+    > "$RESULTS_DIR/mongo_storage.txt" 2>&1 || true
+
 echo "MySQL storage:      $RESULTS_DIR/mysql_storage.txt"
 echo "PostgreSQL storage: $RESULTS_DIR/pg_storage.txt"
+echo "MongoDB storage:    $RESULTS_DIR/mongo_storage.txt"

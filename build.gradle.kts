@@ -29,6 +29,9 @@ dependencies {
     // ULID
     implementation("com.github.f4b6a3:ulid-creator:5.2.3")
 
+    // MongoDB
+    implementation("org.mongodb:mongodb-driver-sync:5.2.1")
+
     // Logging
     implementation("ch.qos.logback:logback-classic:1.5.18")
     implementation("org.slf4j:slf4j-api:2.0.17")
@@ -60,7 +63,8 @@ jmh {
         "-Dbench.mysql.password=bench123",
         "-Dbench.pg.url=jdbc:postgresql://localhost:5432/pk_bench?reWriteBatchedInserts=true",
         "-Dbench.pg.user=bench",
-        "-Dbench.pg.password=bench123"
+        "-Dbench.pg.password=bench123",
+        "-Dbench.mongo.uri=mongodb://bench:bench123@localhost:27017/pk_bench?authSource=admin"
     )
 }
 

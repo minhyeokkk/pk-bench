@@ -49,6 +49,25 @@ services:
       timeout: 5s
       retries: 15
 
+  mongo:
+    image: mongo:7.0
+    container_name: pk-bench-mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: bench
+      MONGO_INITDB_ROOT_PASSWORD: bench123
+      MONGO_INITDB_DATABASE: pk_bench
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    command: mongod --wiredTigerCacheSizeGB 1
+    healthcheck:
+      test: ["CMD", "mongosh", "--username", "bench", "--password", "bench123", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+
 volumes:
   mysql_data:
   postgres_data:
+  mongo_data:
