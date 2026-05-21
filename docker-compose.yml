@@ -1,0 +1,54 @@
+version: "3.9"
+
+services:
+  mysql:
+    image: mysql:8.0.39
+    container_name: pk-bench-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpw
+      MYSQL_DATABASE: pk_bench
+      MYSQL_USER: bench
+      MYSQL_PASSWORD: bench123
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    command: >
+      --innodb_buffer_pool_size=1G
+      --innodb_log_file_size=512M
+      --innodb_flush_log_at_trx_commit=1
+      --innodb_flush_method=O_DIRECT
+      --max_connections=200
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "bench", "-pbench123"]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+
+  postgres:
+    image: postgres:16.4
+    container_name: pk-bench-postgres
+    environment:
+      POSTGRES_DB: pk_bench
+      POSTGRES_USER: bench
+      POSTGRES_PASSWORD: bench123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    command: >
+      postgres
+      -c shared_buffers=512MB
+      -c effective_cache_size=1GB
+      -c wal_buffers=16MB
+      -c synchronous_commit=on
+      -c max_connections=200
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U bench -d pk_bench"]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+
+volumes:
+  mysql_data:
+  postgres_data:
